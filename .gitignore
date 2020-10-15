@@ -1,0 +1,8 @@
+bin/
+lib/
+testbin/
+.classpath
+.DS_Store
+library.obj
+.project
+/target/
