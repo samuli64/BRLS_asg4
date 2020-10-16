@@ -4,5 +4,6 @@ testbin/
 .classpath
 .DS_Store
 library.obj
+calendar.obj
 .project
 /target/
