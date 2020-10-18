@@ -53,7 +53,8 @@ class LibraryTest {
 				patrons, loans, currentLoans, damagedBooks);
 
 		book = new Book(author, title, callNo, bookId, IBook.BookState.ON_LOAN);
-		patron = new Patron(author, author, author, phoneNumber, bookId, phoneNumber, null, patronloans);
+		patron = new Patron(lastName, firstName, email, phoneNumber, patronId, 0.0,
+				IPatron.PatronState.CAN_BORROW, patronloans);
 
 		patrons.put(patron.getId(), patron);
 		catalog.put(book.getId(), book);
