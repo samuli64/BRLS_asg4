@@ -95,7 +95,7 @@ class ReturnBookControlTest {
 		double expectedBeforeDischarge = 0.0;
 		assertEquals(expectedBeforeDischarge, finesPayable);
 
-		double expectedAfterDischarge = 4.0;
+		double expectedAfterDischarge = 2.0;
 		//act
 		returnBookControl.bookScanned(bookId);
 		double finesPayableBeforeDischarge = patron.getFinesPayable();
