@@ -1,4 +1,4 @@
-package library.entities;
+package library.returnbook;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -12,13 +12,24 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import library.entities.Book;
+import library.entities.Calendar;
+import library.entities.IBook;
+import library.entities.ILibrary;
+import library.entities.ILoan;
+import library.entities.IPatron;
+import library.entities.Library;
+import library.entities.Loan;
+import library.entities.Patron;
 import library.entities.helpers.IBookHelper;
 import library.entities.helpers.ILoanHelper;
 import library.entities.helpers.IPatronHelper;
 
 @ExtendWith(MockitoExtension.class)
-class LibraryTest {
-	
+class ReturnBookControlTest {
+
+	@Mock IReturnBookUI returnBookUI;
+	IReturnBookControl returnBookControl;
 	ILibrary library;
 	@Mock IBookHelper bookHelper;
 	@Mock IPatronHelper patronHelper;
@@ -60,10 +71,13 @@ class LibraryTest {
 		catalog.put(book.getId(), book);
 		
 		Calendar.getInstance().setDate(new Date());
+		
+		returnBookControl = new ReturnBookControl(library);
+		returnBookControl.setUI(returnBookUI);
 	}
 
 	@Test
-	void calculateOverDueFine_WhenLoanOverdueByOneDay_ReturnsCorrectFine() {
+	void returnBookControl_WhenFineIncurred_AccruesCorrectFineToPatron() {
 		//arrange
 		loan = new Loan(book, patron, Calendar.getInstance().getDate(), ILoan.LoanState.OVER_DUE, loanId);
 		patronloans.put(loan.getId(), loan);
@@ -71,19 +85,26 @@ class LibraryTest {
 		loans.put(loan.getId(), loan);
 		currentLoans.put(loan.getId(), loan);
 		
-		int daysOverdue = 1;
+		boolean isDamaged = false;
 		
-		//increment date to a single day after due date
+		//increment date to two day after due date
+		int daysOverdue = 2;
 		Calendar.getInstance().incrementDate(daysOverdue);
-		double expected = daysOverdue * ILibrary.FINE_PER_DAY;
 		
-		assertEquals(1.0, expected);
-		
+		double finesPayable = patron.getFinesPayable();
+		double expectedBeforeDischarge = 0.0;
+		assertEquals(expectedBeforeDischarge, finesPayable);
+
+		double expectedAfterDischarge = 2.0;
 		//act
-		double overdueFines = library.calculateOverDueFine(loan);
+		returnBookControl.bookScanned(bookId);
+		double finesPayableBeforeDischarge = patron.getFinesPayable();
+		returnBookControl.dischargeLoan(isDamaged);
+		finesPayable = patron.getFinesPayable();
 		
 		//assert
-		assertEquals(expected, overdueFines);
+		assertEquals(expectedBeforeDischarge, finesPayableBeforeDischarge);
+		assertEquals(expectedAfterDischarge, finesPayable);
 	}
 
 }
